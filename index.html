@@ -3,16 +3,20 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Bikewatching</title>
-  <link rel="stylesheet" href="global.css">
-  <link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
-  <!-- Mapbox GL JS CSS -->
-<link href="https://api.mapbox.com/mapbox-gl-js/v2.15.0/mapbox-gl.css" rel="stylesheet" />
+  <title>Map Test</title>
+  <link href="https://api.mapbox.com/mapbox-gl-js/v2.15.0/mapbox-gl.css" rel="stylesheet" />
 </head>
 <body>
-  <h1>🚴🏼‍♀️ Bikewatching</h1>
-  <div id="map"></div>
+  <div id="map" style="width:100%; height:100vh;"></div>
   <script src="https://api.mapbox.com/mapbox-gl-js/v2.15.0/mapbox-gl.js"></script>
-  <script src="map.js"></script>
+  <script>
+    mapboxgl.accessToken = 'pk.eyJ1IjoiYXJzaGlhLXZhZGhhbmkiLCJhIjoiY203ZG95OG83MDVnaTJrb2dra2wxbGsyNyJ9.zgaAULXAjZUH5wfI8RVnPg';
+    const map = new mapboxgl.Map({
+      container: 'map',
+      style: 'mapbox://styles/mapbox/streets-v12',
+      center: [-71.09415, 42.36027],
+      zoom: 12
+    });
+  </script>
 </body>
 </html>
