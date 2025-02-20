@@ -7,7 +7,7 @@ html, body {
   }
   
   #map {
-    width: 75%; /* Full width */
-    height: 75vh; /* Full viewport height */
+    width: 50%; /* Full width */
+    height: 50vh; /* Full viewport height */
   }
   
