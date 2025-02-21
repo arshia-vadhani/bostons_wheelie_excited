@@ -19,6 +19,11 @@ function getCoords(station) {
     const { x, y } = map.project(point);  // Project to pixel coordinates
     return { cx: x, cy: y };  // Return as object for use in SVG attributes
 }
+function updatePositions() {
+    circles
+      .attr('cx', d => getCoords(d).cx)  // Set the x-position using projected coordinates
+      .attr('cy', d => getCoords(d).cy); // Set the y-position using projected coordinates
+}
 
 map.on('load', () => {
 
@@ -84,11 +89,6 @@ map.on('load', () => {
 });
 
 // Function to update circle positions when the map moves/zooms
-function updatePositions() {
-    circles
-      .attr('cx', d => getCoords(d).cx)  // Set the x-position using projected coordinates
-      .attr('cy', d => getCoords(d).cy); // Set the y-position using projected coordinates
-}
 
 // Reposition markers on map interactions
 map.on('move', updatePositions);     // Update during map movement
