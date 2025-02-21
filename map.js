@@ -10,7 +10,7 @@ const map = new mapboxgl.Map({
     maxZoom: 18 
 });
 
-const svg = d3.select('#map').select('svg');
+
 let stations = [];
 let circles;
 
@@ -69,6 +69,8 @@ map.on('load', () => {
         console.log('Loaded JSON Data:', jsonData);  // Verify the structure
         stations = jsonData.data.stations; // Access the station data
         console.log('Stations Array:', stations); // Verify extracted data
+
+        const svg = d3.select('#map').select('svg');
 
         // Append circles to the SVG for each station
         circles = svg.selectAll('circle')
