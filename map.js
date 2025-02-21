@@ -12,6 +12,7 @@ const map = new mapboxgl.Map({
 
 const svg = d3.select('#map').select('svg');
 let stations = [];
+let circles;
 
 function getCoords(station) {
     const point = new mapboxgl.LngLat(+station.lon, +station.lat);  // Convert lon/lat to Mapbox LngLat
