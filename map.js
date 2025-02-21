@@ -71,7 +71,7 @@ map.on('load', () => {
         console.log('Stations Array:', stations); // Verify extracted data
 
         // Append circles to the SVG for each station
-        const circles = svg.selectAll('circle')
+        circles = svg.selectAll('circle')
           .data(stations)
           .enter()
           .append('circle')
