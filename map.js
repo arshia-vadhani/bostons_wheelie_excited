@@ -82,7 +82,7 @@ map.on('load', () => {
           .attr('stroke', 'white')    // Circle border color
           .attr('stroke-width', 1)    // Circle border thickness
           .attr('opacity', 0.8);      // Circle opacity
-
+        console.log(circles)
         // Initial position update when map loads
         updatePositions();
     }).catch(error => {
