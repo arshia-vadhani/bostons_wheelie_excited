@@ -10,12 +10,6 @@ const map = new mapboxgl.Map({
 });
 
 map.on('load', () => {
-    // Define shared line style
-    const bikeLaneStyle = {
-        'line-color': '#32D400',  
-        'line-width': 5,          
-        'line-opacity': 0.6       
-    };
 
     // Add Boston bike lanes
     map.addSource('boston_route', {
@@ -27,7 +21,11 @@ map.on('load', () => {
         id: 'boston-bike-lanes',
         type: 'line',
         source: 'boston_route',
-        paint: bikeLaneStyle // Reference the shared style object
+        paint: {
+            'line-color': '#32D400',  // A bright green using hex code
+            'line-width': 5,          // Thicker lines
+            'line-opacity': 0.6       // Slightly less transparent
+          }// Reference the shared style object
     });
 
     // Add Cambridge bike lanes
@@ -40,7 +38,11 @@ map.on('load', () => {
         id: 'cambridge-bike-lanes',
         type: 'line',
         source: 'cambridge_route',
-        paint: bikeLaneStyle // Reuse the same styling
+        paint: {
+            'line-color': '#32D400',  // A bright green using hex code
+            'line-width': 5,          // Thicker lines
+            'line-opacity': 0.6       // Slightly less transparent
+          } // Reuse the same styling
     });
     const jsonUrl = 'https://dsc106.com/labs/lab07/data/bluebikes-stations.json';
 
