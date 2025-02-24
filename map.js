@@ -109,14 +109,6 @@ function processTrafficData() {
     console.log('Station Traffic:', stationTraffic);
     updateCircleSizes(); // Update the circles with new sizes
 }
-function updateCircleSizes() {
-    const maxTraffic = Math.max(...Object.values(stationTraffic));
-
-    circles.attr('r', d => {
-        const traffic = stationTraffic[d.station_id] || 0;
-        return 3 + (traffic / maxTraffic) * 10; // Scale radius (min: 3px, max: 13px)
-    });
-}
 
 // Function to update circle positions when the map moves/zooms
 
