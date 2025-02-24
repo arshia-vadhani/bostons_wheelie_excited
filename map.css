@@ -26,3 +26,8 @@ circle {
     stroke-width: 1;
     pointer-events: auto;
 }
+.tooltip {
+    position: absolute;
+    pointer-events: none;
+    opacity: 0;
+  }

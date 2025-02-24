@@ -12,6 +12,9 @@ const map = new mapboxgl.Map({
 let stations = [];
 let trips = [];
 let circles;
+const tooltip = d3.select("body").append("div")
+  .attr("class", "tooltip")
+  .style("opacity", 0);
 
 const arrivals = d3.rollup(
     trips,
