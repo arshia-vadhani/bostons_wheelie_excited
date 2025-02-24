@@ -1,6 +1,5 @@
 mapboxgl.accessToken = 'pk.eyJ1IjoiYXJzaGlhLXZhZGhhbmkiLCJhIjoiY203ZG95OG83MDVnaTJrb2dra2wxbGsyNyJ9.zgaAULXAjZUH5wfI8RVnPg';
 
-
 const map = new mapboxgl.Map({
     container: 'map', 
     style: 'mapbox://styles/mapbox/streets-v12',
@@ -10,24 +9,43 @@ const map = new mapboxgl.Map({
     maxZoom: 18 
 });
 
-
 let stations = [];
+let trips = [];
 let circles;
 
 function getCoords(station) {
-    const point = new mapboxgl.LngLat(+station.lon, +station.lat);  // Convert lon/lat to Mapbox LngLat
-    const { x, y } = map.project(point);  // Project to pixel coordinates
-    return { cx: x, cy: y };  // Return as object for use in SVG attributes
+    const point = new mapboxgl.LngLat(+station.lon, +station.lat);
+    const { x, y } = map.project(point);
+    return { cx: x, cy: y };
 }
+
 function updatePositions() {
     circles
-      .attr('cx', d => getCoords(d).cx)  // Set the x-position using projected coordinates
-      .attr('cy', d => getCoords(d).cy); // Set the y-position using projected coordinates
+        .attr('cx', d => getCoords(d).cx)
+        .attr('cy', d => getCoords(d).cy)
+        .attr('r', function() { return d3.select(this).attr('r'); }); // Maintain the size
 }
 
-map.on('load', () => {
+function countTripsPerStation(trips) {
+    const counts = {};
+    trips.forEach(trip => {
+        counts[trip.start_station_id] = (counts[trip.start_station_id] || 0) + 1;
+        counts[trip.end_station_id] = (counts[trip.end_station_id] || 0) + 1;
+    });
+    return counts;
+}
 
+function updateCircleSizes(stationCounts) {
+    const maxCount = Math.max(...Object.values(stationCounts));
+    const sizeScale = d3.scaleSqrt().domain([0, maxCount]).range([3, 20]);
 
+    circles
+        .attr('r', d => sizeScale(stationCounts[d.station_id] || 0))
+        .append('title')
+        .text(d => `Station: ${d.name}\nTrips: ${stationCounts[d.station_id] || 0}`);
+}
+
+map.on('load', async () => {
     // Add Boston bike lanes
     map.addSource('boston_route', {
         type: 'geojson',
@@ -39,10 +57,10 @@ map.on('load', () => {
         type: 'line',
         source: 'boston_route',
         paint: {
-            'line-color': '#32D400',  // A bright green using hex code
-            'line-width': 5,          // Thicker lines
-            'line-opacity': 0.6       // Slightly less transparent
-          } // Reference the shared style object
+            'line-color': '#32D400',
+            'line-width': 5,
+            'line-opacity': 0.6
+        }
     });
 
     // Add Cambridge bike lanes
@@ -56,43 +74,45 @@ map.on('load', () => {
         type: 'line',
         source: 'cambridge_route',
         paint: {
-            'line-color': '#32D400',  // A bright green using hex code
-            'line-width': 5,          // Thicker lines
-            'line-opacity': 0.6       // Slightly less transparent
-          } // Reuse the same styling
+            'line-color': '#32D400',
+            'line-width': 5,
+            'line-opacity': 0.6
+        }
     });
 
-    const jsonUrl = 'https://dsc106.com/labs/lab07/data/bluebikes-stations.json';
+    try {
+        const [stationData, tripData] = await Promise.all([
+            d3.json('https://dsc106.com/labs/lab07/data/bluebikes-stations.json'),
+            d3.csv('https://dsc106.com/labs/lab07/data/bluebikes-traffic-2024-03.csv')
+        ]);
 
-    // Fetch the JSON file
-    d3.json(jsonUrl).then(jsonData => {
-        console.log('Loaded JSON Data:', jsonData);  // Verify the structure
-        stations = jsonData.data.stations; // Access the station data
-        console.log('Stations Array:', stations); // Verify extracted data
+        console.log('Loaded Station Data:', stationData);
+        console.log('Loaded Trip Data:', tripData);
+
+        stations = stationData.data.stations;
+        trips = tripData;
 
         const svg = d3.select('#map').select('svg');
 
-        // Append circles to the SVG for each station
         circles = svg.selectAll('circle')
-          .data(stations)
-          .enter()
-          .append('circle')
-          .attr('r', 5)               // Radius of the circle
-          .attr('fill', 'steelblue')  // Circle fill color
-          .attr('stroke', 'white')    // Circle border color
-          .attr('stroke-width', 1)    // Circle border thickness
-          .attr('opacity', 0.8);      // Circle opacity
-        // Initial position update when map loads
+            .data(stations)
+            .enter()
+            .append('circle')
+            .attr('fill', 'steelblue')
+            .attr('stroke', 'white')
+            .attr('stroke-width', 1)
+            .attr('opacity', 0.8);
+
+        const stationCounts = countTripsPerStation(trips);
+        updateCircleSizes(stationCounts);
         updatePositions();
-    }).catch(error => {
-        console.error('Error loading JSON:', error); // Handle errors
-    });
+    } catch (error) {
+        console.error('Error loading data:', error);
+    }
 });
 
-// Function to update circle positions when the map moves/zooms
-
 // Reposition markers on map interactions
-map.on('move', updatePositions);     // Update during map movement
-map.on('zoom', updatePositions);     // Update during zooming
-map.on('resize', updatePositions);   // Update on window resize
-map.on('moveend', updatePositions);  // Final adjustment after movement ends
+map.on('move', updatePositions);
+map.on('zoom', updatePositions);
+map.on('resize', updatePositions);
+map.on('moveend', updatePositions);
