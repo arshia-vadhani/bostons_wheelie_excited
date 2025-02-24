@@ -12,6 +12,7 @@ const map = new mapboxgl.Map({
 let stations = [];
 let trips = [];
 let circles;
+let timeFilter = -1;
 const tooltip = d3.select("body").append("div")
   .attr("class", "tooltip")
   .style("opacity", 0);
@@ -54,6 +55,24 @@ function updateCircleSizes(stationCounts) {
         .append('title')
         .text(d => `Station: ${d.name}\nTotal Traffic: ${d.totalTraffic}`);
 }
+function formatTime(minutes) {
+    const date = new Date(0, 0, 0, 0, minutes);  // Set hours & minutes
+    return date.toLocaleString('en-US', { timeStyle: 'short' }); // Format as HH:MM AM/PM
+  }
+function updateTimeDisplay() {
+    timeFilter = Number(timeSlider.value);  // Get slider value
+  
+    if (timeFilter === -1) {
+      selectedTime.textContent = '';  // Clear time display
+      anyTimeLabel.style.display = 'block';  // Show "(any time)"
+    } else {
+      selectedTime.textContent = formatTime(timeFilter);  // Display formatted time
+      anyTimeLabel.style.display = 'none';  // Hide "(any time)"
+    }
+  
+    // Trigger filtering logic which will be implemented in the next step
+    // You can add a placeholder here, like: console.log('Filtering to be implemented');
+  }
 
 
 map.on('load', async () => {
@@ -142,6 +161,10 @@ map.on('load', async () => {
                     .append('title')
                     .text(`${d.totalTraffic} trips (${d.departures} departures, ${d.arrivals} arrivals)`);
             });
+        const timeSlider = document.getElementById('timeSlider');
+        const selectedTime = document.querySelector('time');
+        const anyTimeLabel = document.querySelector('em');
+        timeSlider.addEventListener('input', updateTimeDisplay);
 
         updatePositions();
     } catch (error) {
