@@ -8,10 +8,26 @@ const map = new mapboxgl.Map({
     minZoom: 5, 
     maxZoom: 18 
 });
+const arrivals = d3.rollup(
+    trips,
+    (v) => v.length,
+    (d) => d.end_station_id
+  );
+
 
 let stations = [];
 let trips = [];
 let circles;
+
+stations = stations.map((station) => {
+    let id = station.short_name;
+    station.arrivals = arrivals.get(id) ?? 0;
+    station.departures = departures.get(id) ?? 0;
+    station.totalTraffic = station.arrivals + station.departures;
+    return station;
+  });
+
+console.log(stations);
 
 function getCoords(station) {
     const point = new mapboxgl.LngLat(+station.lon, +station.lat);
