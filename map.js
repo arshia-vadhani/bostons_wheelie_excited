@@ -88,27 +88,6 @@ map.on('load', () => {
         console.error('Error loading JSON:', error); // Handle errors
     });
 });
-const trafficUrl = 'https://dsc106.com/labs/lab07/data/bluebikes-traffic-2024-03.csv';
-let trips = [];
-
-d3.csv(trafficUrl).then(data => {
-    trips = data;
-    console.log('Loaded Trips Data:', trips);
-    processTrafficData(); // Call function to compute station traffic
-}).catch(error => {
-    console.error('Error loading CSV:', error);
-});
-let stationTraffic = {};
-
-function processTrafficData() {
-    trips.forEach(trip => {
-        const stationId = trip.start_station_id;
-        stationTraffic[stationId] = (stationTraffic[stationId] || 0) + 1;
-    });
-
-    console.log('Station Traffic:', stationTraffic);
-    updateCircleSizes(); // Update the circles with new sizes
-}
 
 // Function to update circle positions when the map moves/zooms
 
