@@ -132,11 +132,13 @@ map.on('load', async () => {
             .attr('fill', 'steelblue')
             .attr('stroke', 'white')
             .attr('stroke-width', 1)
-            .attr('opacity', 0.6);
-
-        circles.attr('r', d => radiusScale(d.totalTraffic))
-               .append('title')
-               .text(d => `Station: ${d.name}\nTotal Traffic: ${d.totalTraffic}`);
+            .attr('opacity', 0.6)
+            .attr('r', d => radiusScale(d.totalTraffic))
+            .each(function(d) {
+                d3.select(this)
+                    .append('title')
+                    .text(`${d.totalTraffic} trips (${d.departures} departures, ${d.arrivals} arrivals)`);
+            });
 
         updatePositions();
     } catch (error) {
