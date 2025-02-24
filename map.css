@@ -24,4 +24,5 @@ circle {
     fill-opacity: 0.6;
     stroke: white;
     stroke-width: 1;
+    pointer-events: auto;
 }

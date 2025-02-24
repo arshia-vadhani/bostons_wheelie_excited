@@ -13,13 +13,6 @@ let stations = [];
 let trips = [];
 let circles;
 
-const arrivals = d3.rollup(
-    trips,
-    (v) => v.length,
-    (d) => d.end_station_id
-  );
-
-
 function getCoords(station) {
     const point = new mapboxgl.LngLat(+station.lon, +station.lat);
     const { x, y } = map.project(point);
@@ -32,26 +25,6 @@ function updatePositions() {
         .attr('cy', d => getCoords(d).cy)
         .attr('r', function() { return d3.select(this).attr('r'); }); // Maintain the size
 }
-
-function countTripsPerStation(trips) {
-    const counts = {};
-    trips.forEach(trip => {
-        counts[trip.start_station_id] = (counts[trip.start_station_id] || 0) + 1;
-        counts[trip.end_station_id] = (counts[trip.end_station_id] || 0) + 1;
-    });
-    return counts;
-}
-
-function updateCircleSizes(stationCounts) {
-    const maxCount = Math.max(...Object.values(stationCounts));
-    const sizeScale = d3.scaleSqrt().domain([0, maxCount]).range([3, 20]);
-
-    circles
-        .attr('r', d => radiusScale(d.totalTraffic))
-        .append('title')
-        .text(d => `Station: ${d.name}\nTotal Traffic: ${d.totalTraffic}`);
-}
-
 
 map.on('load', async () => {
     try {
@@ -66,10 +39,10 @@ map.on('load', async () => {
             type: 'line',
             source: 'boston_route',
             paint: {
-                'line-color': '#32D400',  // A bright green using hex code
-                'line-width': 5,          // Thicker lines
-                'line-opacity': 0.6       // Slightly less transparent
-              } // Reference the shared style object
+                'line-color': '#32D400',
+                'line-width': 5,
+                'line-opacity': 0.6
+            }
         });
     
         // Add Cambridge bike lanes
@@ -83,10 +56,10 @@ map.on('load', async () => {
             type: 'line',
             source: 'cambridge_route',
             paint: {
-                'line-color': '#32D400',  // A bright green using hex code
-                'line-width': 5,          // Thicker lines
-                'line-opacity': 0.6       // Slightly less transparent
-              } // Reuse the same styling
+                'line-color': '#32D400',
+                'line-width': 5,
+                'line-opacity': 0.6
+            }
         });
 
         // Fetch station and trip data
@@ -132,11 +105,14 @@ map.on('load', async () => {
             .attr('fill', 'steelblue')
             .attr('stroke', 'white')
             .attr('stroke-width', 1)
-            .attr('opacity', 0.6);
-
-        circles.attr('r', d => radiusScale(d.totalTraffic))
-               .append('title')
-               .text(d => `Station: ${d.name}\nTotal Traffic: ${d.totalTraffic}`);
+            .attr('opacity', 0.6)
+            .attr('r', d => radiusScale(d.totalTraffic))
+            .each(function(d) {
+                // Add <title> for browser tooltips
+                d3.select(this)
+                    .append('title')
+                    .text(`${d.totalTraffic} trips (${d.departures} departures, ${d.arrivals} arrivals)`);
+            });
 
         updatePositions();
     } catch (error) {
