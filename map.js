@@ -8,17 +8,16 @@ const map = new mapboxgl.Map({
     minZoom: 5, 
     maxZoom: 18 
 });
-const arrivals = d3.rollup(
-    trips,
-    (v) => v.length,
-    (d) => d.end_station_id
-  );
-
 
 let stations = [];
 let trips = [];
 let circles;
 
+const arrivals = d3.rollup(
+    trips,
+    (v) => v.length,
+    (d) => d.end_station_id
+  );
 
 
 function getCoords(station) {
