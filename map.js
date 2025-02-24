@@ -56,42 +56,38 @@ function updateCircleSizes(stationCounts) {
 map.on('load', async () => {
     try {
         // Add Boston bike lanes
-        if (!map.getSource('boston_route')) {
-            map.addSource('boston_route', {
-                type: 'geojson',
-                data: 'https://bostonopendata-boston.opendata.arcgis.com/datasets/boston::existing-bike-network-2022.geojson?...'
-            });
-
-            map.addLayer({
-                id: 'boston-bike-lanes',
-                type: 'line',
-                source: 'boston_route',
-                paint: {
-                    'line-color': '#32D400', // Bright green
-                    'line-width': 5,
-                    'line-opacity': 0.6
-                }
-            });
-        }
-
+        map.addSource('boston_route', {
+            type: 'geojson',
+            data: 'https://bostonopendata-boston.opendata.arcgis.com/datasets/boston::existing-bike-network-2022.geojson?...'
+        });
+    
+        map.addLayer({
+            id: 'boston-bike-lanes',
+            type: 'line',
+            source: 'boston_route',
+            paint: {
+                'line-color': '#32D400',  // A bright green using hex code
+                'line-width': 5,          // Thicker lines
+                'line-opacity': 0.6       // Slightly less transparent
+              } // Reference the shared style object
+        });
+    
         // Add Cambridge bike lanes
-        if (!map.getSource('cambridge_route')) {
-            map.addSource('cambridge_route', {
-                type: 'geojson',
-                data: 'https://raw.githubusercontent.com/cambridgegis/cambridgegis_data/main/Recreation/Bike_Facilities/RECREATION_BikeFacilities.geojson'
-            });
-
-            map.addLayer({
-                id: 'cambridge-bike-lanes',
-                type: 'line',
-                source: 'cambridge_route',
-                paint: {
-                    'line-color': '#32D400', // Bright green
-                    'line-width': 5,
-                    'line-opacity': 0.6
-                }
-            });
-        }
+        map.addSource('cambridge_route', {
+            type: 'geojson',
+            data: 'https://raw.githubusercontent.com/cambridgegis/cambridgegis_data/main/Recreation/Bike_Facilities/RECREATION_BikeFacilities.geojson'
+        });
+    
+        map.addLayer({
+            id: 'cambridge-bike-lanes',
+            type: 'line',
+            source: 'cambridge_route',
+            paint: {
+                'line-color': '#32D400',  // A bright green using hex code
+                'line-width': 5,          // Thicker lines
+                'line-opacity': 0.6       // Slightly less transparent
+              } // Reuse the same styling
+        });
 
         // Fetch station and trip data
         const [stationData, tripData] = await Promise.all([
