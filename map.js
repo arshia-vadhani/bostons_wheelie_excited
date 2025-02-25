@@ -223,13 +223,14 @@ map.on('load', async () => {
             .attr('stroke-width', 1)
             .attr('opacity', 0.6)
             .attr('r', d => radiusScale(d.totalTraffic))
+            .style("--departure-ratio", d => stationFlow(d.departures / d.totalTraffic))
             .each(function(d) {
                 // Add <title> for browser tooltips
                 d3.select(this)
                   .append('title')
                   .text(`${d.totalTraffic} trips<br>(${d.departures} departures, ${d.arrivals} arrivals)`);
-            })
-            .style("--departure-ratio", d => stationFlow(d.departures / d.totalTraffic));
+            });
+           
         const timeSlider = document.getElementById('timeSlider');
         const selectedTime = document.querySelector('time');
         const anyTimeLabel = document.querySelector('em');
@@ -262,13 +263,13 @@ map.on('load', async () => {
         .data(filteredStations, (d) => d.short_name) 
         .join('circle') // Ensure the data is bound correctly
         .attr('r', (d) => radiusScale(d.totalTraffic))
+        .style("--departure-ratio", d => stationFlow(d.departures / d.totalTraffic))
         .each(function(d) {
             // Add <title> for browser tooltips
             d3.select(this)
               .append('title')
               .text(`${d.totalTraffic} trips<br>(${d.departures} departures, ${d.arrivals} arrivals)`);
-        })
-        .style("--departure-ratio", d => stationFlow(d.departures / d.totalTraffic));
+        });
     }
 
 
