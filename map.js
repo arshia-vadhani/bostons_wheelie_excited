@@ -80,23 +80,36 @@ function formatTime(minutes) {
   }
 
 
-function minutesSinceMidnight(date) {
-    return date.getHours() * 60 + date.getMinutes();
-  }
+// function minutesSinceMidnight(date) {
+//     return date.getHours() * 60 + date.getMinutes();
+//   }
 
-function filterTripsbyTime(trips, timeFilter) {
-    return timeFilter === -1 
-      ? trips 
-      : trips.filter((trip) => {
-          const startedMinutes = minutesSinceMidnight(trip.started_at);
-          const endedMinutes = minutesSinceMidnight(trip.ended_at);
+// function filterTripsbyTime(trips, timeFilter) {
+//     return timeFilter === -1 
+//       ? trips 
+//       : trips.filter((trip) => {
+//           const startedMinutes = minutesSinceMidnight(trip.started_at);
+//           const endedMinutes = minutesSinceMidnight(trip.ended_at);
           
-          return (
-            Math.abs(startedMinutes - timeFilter) <= 60 ||
-            Math.abs(endedMinutes - timeFilter) <= 60
-          );
-      });
-  }
+//           return (
+//             Math.abs(startedMinutes - timeFilter) <= 60 ||
+//             Math.abs(endedMinutes - timeFilter) <= 60
+//           );
+//       });
+//   }
+// function updateTimeDisplay() {
+//     let timeFilter = Number(timeSlider.value);
+
+//     if (timeFilter === -1) {
+//         selectedTime.textContent = '';
+//         anyTimeLabel.style.display = 'block';
+//     } else {
+//         selectedTime.textContent = formatTime(timeFilter);
+//         anyTimeLabel.style.display = 'none';
+//     }
+    
+//     updateScatterPlot(timeFilter);
+// }
 
 
 
@@ -154,6 +167,24 @@ map.on('load', async () => {
 
         const stations = computeStationTraffic(stationData.data.stations, trips);
         
+        function minutesSinceMidnight(date) {
+            return date.getHours() * 60 + date.getMinutes();
+        }
+        function filterTripsbyTime(trips, timeFilter) {
+  return timeFilter === -1 
+    ? trips // If no filter is applied (-1), return all trips
+    : trips.filter((trip) => {
+        // Convert trip start and end times to minutes since midnight
+        const startedMinutes = minutesSinceMidnight(trip.started_at);
+        const endedMinutes = minutesSinceMidnight(trip.ended_at);
+        
+        // Include trips that started or ended within 60 minutes of the selected time
+        return (
+          Math.abs(startedMinutes - timeFilter) <= 60 ||
+          Math.abs(endedMinutes - timeFilter) <= 60
+        );
+    });
+}
 
         // const departures = d3.rollup(
         //     trips,
@@ -201,40 +232,40 @@ map.on('load', async () => {
         const anyTimeLabel = document.querySelector('em');
         timeSlider.addEventListener('input', updateTimeDisplay);
         
-        
     function updateTimeDisplay() {
-    let timeFilter = Number(timeSlider.value);
+        let timeFilter = Number(timeSlider.value);
 
-    if (timeFilter === -1) {
-        selectedTime.textContent = '';
-        anyTimeLabel.style.display = 'block';
-    } else {
-        selectedTime.textContent = formatTime(timeFilter);
-        anyTimeLabel.style.display = 'none';
+        if (timeFilter === -1) {
+            selectedTime.textContent = '';
+            anyTimeLabel.style.display = 'block';
+        } else {
+            selectedTime.textContent = formatTime(timeFilter);
+            anyTimeLabel.style.display = 'none';
+        }
+        
+        updateScatterPlot(timeFilter);
+    }   
+    
+    function updateScatterPlot(timeFilter) {
+        // Get only the trips that match the selected time filter
+        const filteredTrips = filterTripsbyTime(trips, timeFilter);
+        
+        // Recompute station traffic based on the filtered trips
+        const filteredStations = computeStationTraffic(stations, filteredTrips);
+        timeFilter === -1 ? radiusScale.range([0, 25]) : radiusScale.range([3, 50]);
+        
+        // Update the scatterplot by adjusting the radius of circles
+        circles
+        .data(filteredStations, (d) => d.short_name) 
+        .join('circle') // Ensure the data is bound correctly
+        .attr('r', (d) => radiusScale(d.totalTraffic)); // Update circle sizes
     }
-    
-    updateScatterPlot(timeFilter);
-}
-function updateScatterPlot(timeFilter) {
-    // Get only the trips that match the selected time filter
-    const filteredTrips = filterTripsbyTime(trips, timeFilter);
-    
-    // Recompute station traffic based on the filtered trips
-    const filteredStations = computeStationTraffic(stations, filteredTrips);
-    timeFilter === -1 ? radiusScale.range([0, 25]) : radiusScale.range([3, 50]);
-    
-    // Update the scatterplot by adjusting the radius of circles
-    circles
-      .data(filteredStations, (d) => d.short_name) 
-      .join('circle') // Ensure the data is bound correctly
-      .attr('r', (d) => radiusScale(d.totalTraffic)); // Update circle sizes
-}
 
 
-        updatePositions();
-    } catch (error) {
-        console.error('Error loading data:', error);
-    }
+            updatePositions();
+        } catch (error) {
+            console.error('Error loading data:', error);
+        }
 });
 
 // Reposition markers on map interactions
