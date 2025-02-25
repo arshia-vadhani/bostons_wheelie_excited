@@ -228,7 +228,7 @@ map.on('load', async () => {
                 // Add <title> for browser tooltips
                 d3.select(this)
                   .append('title')
-                  .text(`${d.totalTraffic} trips<br>(${d.departures} departures, ${d.arrivals} arrivals)`);
+                  .text(`${d.totalTraffic} trips(${d.departures} departures, ${d.arrivals} arrivals)`);
             });
            
         const timeSlider = document.getElementById('timeSlider');
@@ -268,7 +268,7 @@ map.on('load', async () => {
             // Add <title> for browser tooltips
             d3.select(this)
               .append('title')
-              .text(`${d.totalTraffic} trips<br>(${d.departures} departures, ${d.arrivals} arrivals)`);
+              .text(`${d.totalTraffic} trips(${d.departures} departures, ${d.arrivals} arrivals)`);
         });
     }
 
