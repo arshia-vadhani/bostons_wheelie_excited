@@ -84,6 +84,6 @@ html, body {
 /* Tooltip */
 .tooltip {
     position: absolute;
-    pointer-events: none;
+    pointer-events: auto;
     opacity: 0;
 }
