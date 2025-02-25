@@ -176,7 +176,7 @@ map.on('load', async () => {
         
         ]);
 
-        const stations = computeStationTraffic(jsonData.data.stations, trips);
+        const stations = computeStationTraffic(stationData.data.stations, trips);
         
 
         // const departures = d3.rollup(
