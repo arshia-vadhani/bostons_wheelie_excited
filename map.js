@@ -224,7 +224,7 @@ function updateScatterPlot(timeFilter) {
     
     // Update the scatterplot by adjusting the radius of circles
     circles
-      .data(filteredStations)
+      .data(filteredStations, (d) => d.short_name) 
       .join('circle') // Ensure the data is bound correctly
       .attr('r', (d) => radiusScale(d.totalTraffic)); // Update circle sizes
 }
