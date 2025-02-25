@@ -9,8 +9,8 @@ const map = new mapboxgl.Map({
     maxZoom: 18 
 });
 
-let stations = [];
-let trips = [];
+
+
 let circles;
 let timeFilter = -1;
 const tooltip = d3.select("body").append("div")
