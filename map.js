@@ -166,6 +166,7 @@ map.on('load', async () => {
         ]);
 
         const stations = computeStationTraffic(stationData.data.stations, trips);
+        let stationFlow = d3.scaleQuantize().domain([0, 1]).range([0, 0.5, 1]);
         
         function minutesSinceMidnight(date) {
             return date.getHours() * 60 + date.getMinutes();
@@ -226,7 +227,8 @@ map.on('load', async () => {
                 d3.select(this)
                     .append('title')
                     .text(`${d.totalTraffic} trips (${d.departures} departures, ${d.arrivals} arrivals)`);
-            });
+            })
+            .style("--departure-ratio", d => stationFlow(d.departures / d.totalTraffic)) ;
         const timeSlider = document.getElementById('timeSlider');
         const selectedTime = document.querySelector('time');
         const anyTimeLabel = document.querySelector('em');
@@ -258,7 +260,10 @@ map.on('load', async () => {
         circles
         .data(filteredStations, (d) => d.short_name) 
         .join('circle') // Ensure the data is bound correctly
-        .attr('r', (d) => radiusScale(d.totalTraffic)); // Update circle sizes
+        .attr('r', (d) => radiusScale(d.totalTraffic))
+        .style('--departure-ratio', (d) =>
+      stationFlow(d.departures / d.totalTraffic),
+    ); 
     }
 
 
