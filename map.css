@@ -5,7 +5,21 @@ html, body {
     height: 100%; /* Ensure full height inheritance */
     width: 100%; /* Ensure full width inheritance */
   }
+
+:root {
+    --color-departures: steelblue;
+    --color-arrivals: darkorange;
+  }
   
+  #map circle, .legend > div {
+    --color: color-mix(
+      in oklch,
+      var(--color-departures) calc(100% * var(--departure-ratio)),
+      var(--color-arrivals)
+    );
+  }
+
+
 #map {
     width: 100%; /* Full width */
     height: 100vh; /* Full viewport height */
@@ -19,19 +33,37 @@ html, body {
     z-index: 1; /* Ensure it appears above the map */
     pointer-events: none; /* Allows interaction with the map */
 }
-circle {
-    fill-opacity: 0.6;
+
+#map circle {
+    fill: var(--color);
     stroke: white;
     stroke-width: 1;
-    pointer-events: auto;
-    --color-departures: steelblue;
-    --color-arrivals: darkorange;
-    --color: color-mix(
-    in oklch,
-    var(--color-departures) calc(100% * var(--departure-ratio)),
-    var(--color-arrivals)
-    );
-    fill: var(--color);
+    opacity: 0.6;
+  }
+.legend {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    margin-block: 20px;
+    font-family: Arial, sans-serif;
+}
+
+.legend > div {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+}
+
+.legend > div::before {
+    content: "";
+    width: 20px;
+    height: 20px;
+    background-color: var(--color);
+    border: 1px solid #333;
+}
+
+.legend-title {
+font-weight: bold;
 }
 .tooltip {
     position: absolute;
