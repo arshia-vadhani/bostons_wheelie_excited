@@ -98,32 +98,8 @@ function filterTripsbyTime(trips, timeFilter) {
       });
   }
 
-function updateScatterPlot(timeFilter) {
-    const filteredTrips = filterTripsbyTime(trips, timeFilter);
-    const filteredStations = computeStationTraffic(stations, filteredTrips);
-    
-    timeFilter === -1 ? radiusScale.range([0, 25]) : radiusScale.range([3, 50]);
-
-    circles
-        .data(filteredStations, (d) => d.short_name)
-        .join('circle')
-        .attr('r', (d) => radiusScale(d.totalTraffic));
-}
 
 
-function updateTimeDisplay() {
-    let timeFilter = Number(timeSlider.value);
-
-    if (timeFilter === -1) {
-        selectedTime.textContent = '';
-        anyTimeLabel.style.display = 'block';
-    } else {
-        selectedTime.textContent = formatTime(timeFilter);
-        anyTimeLabel.style.display = 'none';
-    }
-    
-    updateScatterPlot(timeFilter);
-}
 
 
 map.on('load', async () => {
@@ -224,6 +200,35 @@ map.on('load', async () => {
         const selectedTime = document.querySelector('time');
         const anyTimeLabel = document.querySelector('em');
         timeSlider.addEventListener('input', updateTimeDisplay);
+        
+        
+    function updateTimeDisplay() {
+    let timeFilter = Number(timeSlider.value);
+
+    if (timeFilter === -1) {
+        selectedTime.textContent = '';
+        anyTimeLabel.style.display = 'block';
+    } else {
+        selectedTime.textContent = formatTime(timeFilter);
+        anyTimeLabel.style.display = 'none';
+    }
+    
+    updateScatterPlot(timeFilter);
+}
+function updateScatterPlot(timeFilter) {
+    // Get only the trips that match the selected time filter
+    const filteredTrips = filterTripsbyTime(trips, timeFilter);
+    
+    // Recompute station traffic based on the filtered trips
+    const filteredStations = computeStationTraffic(stations, filteredTrips);
+    
+    // Update the scatterplot by adjusting the radius of circles
+    circles
+      .data(filteredStations)
+      .join('circle') // Ensure the data is bound correctly
+      .attr('r', (d) => radiusScale(d.totalTraffic)); // Update circle sizes
+}
+
 
         updatePositions();
     } catch (error) {
