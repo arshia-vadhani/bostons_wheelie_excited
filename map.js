@@ -223,10 +223,18 @@ map.on('load', async () => {
             .attr('stroke-width', 1)
             .attr('opacity', 0.6)
             .attr('r', d => radiusScale(d.totalTraffic))
-            .each(function(d) {
-                d3.select(this)
-                    .append('title')
-                    .text(`${d.totalTraffic} trips (${d.departures} departures, ${d.arrivals} arrivals)`);
+            .on('mouseover', (event, d) => {
+                tooltip.transition()
+                    .duration(200)
+                    .style("opacity", .9);
+                tooltip.html(`${d.totalTraffic} trips<br>(${d.departures} departures, ${d.arrivals} arrivals)`)
+                    .style("left", (event.pageX + 10) + "px")
+                    .style("top", (event.pageY - 28) + "px");
+            })
+            .on('mouseout', () => {
+                tooltip.transition()
+                    .duration(500)
+                    .style("opacity", 0);
             })
             .style("--departure-ratio", d => stationFlow(d.departures / d.totalTraffic)) ;
         const timeSlider = document.getElementById('timeSlider');
@@ -261,6 +269,19 @@ map.on('load', async () => {
         .data(filteredStations, (d) => d.short_name) 
         .join('circle') // Ensure the data is bound correctly
         .attr('r', (d) => radiusScale(d.totalTraffic))
+        .on('mouseover', (event, d) => {
+            tooltip.transition()
+                .duration(200)
+                .style("opacity", .9);
+            tooltip.html(`${d.totalTraffic} trips<br>(${d.departures} departures, ${d.arrivals} arrivals)`)
+                .style("left", (event.pageX + 10) + "px")
+                .style("top", (event.pageY - 28) + "px");
+        })
+        .on('mouseout', () => {
+            tooltip.transition()
+                .duration(500)
+                .style("opacity", 0);
+        })
         .style('--departure-ratio', (d) =>
       stationFlow(d.departures / d.totalTraffic),
     ); 
